@@ -1,0 +1,7 @@
+undetected-chromedriver==3.5.5
+selenium==4.25.0
+requests==2.32.3
+urllib3==2.2.3
+certifi
+idna
+charset-normalizer

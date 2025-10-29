@@ -139,6 +139,7 @@ def setup_driver():
     opts.add_argument("--remote-debugging-port=9222")
     opts.add_argument("--no-first-run")
     opts.add_argument("--no-default-browser-check")
+    opts.binary_location = "/usr/bin/chromium-browser"
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--window-size=1600,1000")
     opts.add_argument(
@@ -146,6 +147,7 @@ def setup_driver():
         "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     )
     driver = uc.Chrome(version_main=141, options=opts, headless=HEADLESS)
+    print("Chrome executable path:", driver.capabilities.get("browserExecutable"))
     driver.delete_all_cookies()
     driver.set_page_load_timeout(60)
     try:

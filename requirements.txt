@@ -2,6 +2,8 @@ undetected-chromedriver==3.5.5
 selenium==4.25.0
 requests==2.32.3
 urllib3==2.2.3
-certifi
-idna
-charset-normalizer
+certifi>=2024.2.2
+idna>=3.7
+charset-normalizer>=3.3.2
+beautifulsoup4>=4.12.3
+python-dotenv>=1.0.1

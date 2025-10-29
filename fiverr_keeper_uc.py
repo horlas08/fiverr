@@ -128,16 +128,26 @@ def setup_driver():
     os.makedirs(PROFILE_DIR, exist_ok=True)
     opts = uc.ChromeOptions()
     opts.add_argument(f"--user-data-dir={PROFILE_DIR}")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--disable-gpu")
+    opts.add_argument("--disable-software-rasterizer")
+    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_argument("--headless=new")  # safer for Chrome 110+
+    opts.add_argument("--disable-extensions")
+    opts.add_argument("--disable-infobars")
+    opts.add_argument("--remote-debugging-port=9222")
     opts.add_argument("--no-first-run")
     opts.add_argument("--no-default-browser-check")
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--window-size=1600,1000")
-    opts.add_argument("--no-sandbox")
     opts.add_argument(
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     )
     driver = uc.Chrome(version_main=141, options=opts, headless=HEADLESS)
+    driver.delete_all_cookies()
+    driver.set_page_load_timeout(60)
     try:
         driver.execute_script("""
             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});

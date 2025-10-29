@@ -1,0 +1,62 @@
+name: Keep Khamsat Logged In and Active
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # run every 8 minutes
+  workflow_dispatch:
+
+jobs:
+  keep-active:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # up to 6 hours
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools
+          pip install selenium undetected-chromedriver requests beautifulsoup4
+
+      - name: Install Chrome & Chromedriver (Chrome for Testing)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget unzip
+          wget https://storage.googleapis.com/chrome-for-testing-public/133.0.6943.98/linux64/chrome-linux64.zip
+          wget https://storage.googleapis.com/chrome-for-testing-public/133.0.6943.98/linux64/chromedriver-linux64.zip
+          unzip -q chrome-linux64.zip
+          unzip -q chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          sudo mv chrome-linux64/chrome /usr/local/bin/google-chrome
+          sudo chmod +x /usr/local/bin/google-chrome /usr/local/bin/chromedriver
+          which google-chrome
+          which chromedriver
+          google-chrome --version || true
+          chromedriver --version || true
+
+      - name: Create cookies.json from secret
+        env:
+          KHAMSAT_COOKIES_JSON: ${{ secrets.KHAMSAT_COOKIES_JSON }}
+        run: |
+          echo "$KHAMSAT_COOKIES_JSON" > cookies.json
+
+      - name: Run the Khamsat activity script
+        env:
+          PATH: /usr/local/bin:$PATH
+        run: python3 khamsat_active.py
+
+      - name: Upload debug artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: khamsat-debug
+          path: |
+            debug_page.html
+            debug_page.png
+            debug_requests.html

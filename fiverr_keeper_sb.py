@@ -14,6 +14,7 @@ import json
 import traceback
 import smtplib
 import requests
+import os, sys, psutil
 from email.message import EmailMessage
 from bs4 import BeautifulSoup
 # from selenium.common.exceptions import WebDriverException
@@ -219,6 +220,11 @@ def get_unread_counts(driver):
 
 
 def main():
+
+    for proc in psutil.process_iter(["pid", "name", "cmdline"]):
+        if "fiverr_keeper_sb.py" in " ".join(proc.info.get("cmdline", [])) and proc.pid != os.getpid():
+            print("Another Fiverr bot is already running — exiting.")
+            sys.exit(0)
     global last_alert_unreads
     driver = None
     try:

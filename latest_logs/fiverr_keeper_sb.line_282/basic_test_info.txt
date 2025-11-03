@@ -1,0 +1,30 @@
+fiverr_keeper_sb.py:282:SB
+--------------------------------------------------------------------
+Last Page: https://www.fiverr.com/login?return=pinned_flashes_unread_count
+ Duration: 59.11s
+  Browser: Chrome 142.0.7444.60 / headless
+   Driver: chromedriver 142.0.7444.59
+Timestamp: 1761930540  (Unix Timestamp)
+     Date: Friday, 31 October 2025
+     Time: 6:09:00 PM  (W. Central Africa Standard Time, UTC+01:00)
+--------------------------------------------------------------------
+Traceback:
+  Traceback (most recent call last):
+  File "C:\Users\qozeem\PycharmProjects\fiverr\fiverr_keeper_sb.py", line 226, in main
+    n, m = get_unread_counts(sb.driver)
+  File "C:\Users\qozeem\PycharmProjects\fiverr\fiverr_keeper_sb.py", line 195, in get_unread_counts
+    notif = json.loads(notif_json) if notif_json else {}
+  File "C:\Users\qozeem\.pyenv\pyenv-win\versions\3.9.5\lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "C:\Users\qozeem\.pyenv\pyenv-win\versions\3.9.5\lib\json\decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "C:\Users\qozeem\.pyenv\pyenv-win\versions\3.9.5\lib\json\decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\qozeem\PycharmProjects\fiverr\fiverr_keeper_sb.py", line 230, in main
+    raise Exception("Initial unread check failed: " + repr(e))
+Exception: Initial unread check failed: JSONDecodeError('Expecting property name enclosed in double quotes: line 1 column 2 (char 1)')

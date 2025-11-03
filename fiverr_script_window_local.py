@@ -44,8 +44,7 @@ SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "false").lower() in ("1","true","yes","
 last_alert_unreads = 0
 
 def send_email_notification(subject: str, body: str) -> None:
-    print(body)
-    return;
+
     if not (SMTP_HOST and SMTP_PORT and SMTP_FROM and SMTP_TO):
         print("[email] SMTP not configured, skipping:", subject)
         return

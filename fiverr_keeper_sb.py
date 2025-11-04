@@ -255,7 +255,7 @@ def main():
         os.environ["DISPLAY"] = ":99"
         # driver = setup_driver()
         with SB(uc=True,
-                # headless=HEADLESS,  # Respect your env var
+                headless=HEADLESS,  # Respect your env var
                 xvfb=True,  # Run in virtual display
 
                 remote_debug=True,

@@ -14,7 +14,7 @@ import json
 import traceback
 import smtplib
 import requests
-import os, sys, psutil
+import os, sys, psutil, subprocess
 from email.message import EmailMessage
 from bs4 import BeautifulSoup
 # from selenium.common.exceptions import WebDriverException
@@ -218,13 +218,36 @@ def get_unread_counts(driver):
 
     return n, m
 
+ def is_process_running(keyword):
+        for proc in psutil.process_iter(["pid", "cmdline"]):
+            cmd = " ".join(proc.info.get("cmdline", [])).lower()
+            if keyword in cmd and proc.pid != os.getpid():
+                return True
+        return False
 
 def main():
 
-    for proc in psutil.process_iter(["pid", "name", "cmdline"]):
-        if "fiverr_keeper_sb.py" in " ".join(proc.info.get("cmdline", [])) and proc.pid != os.getpid():
-            print("Another Fiverr bot is already running — exiting.")
-            sys.exit(0)
+    # for proc in psutil.process_iter(["pid", "name", "cmdline"]):
+    #     if "fiverr_keeper_sb.py" in " ".join(proc.info.get("cmdline", [])) and proc.pid != os.getpid():
+    #         print("Another Fiverr bot is already running — exiting.")
+    #         sys.exit(0)
+
+
+
+    # Prevent duplicate bot
+    if is_process_running("fiverr_keeper_sb.py"):
+        print("Another Fiverr bot is already running — exiting.")
+        sys.exit(0)
+
+    # Start Chrome if not running
+    if not is_process_running("chrome"):
+        subprocess.Popen([
+            "google-chrome",
+            "--remote-debugging-port=9222",
+            "--user-data-dir=/tmp/fiverr_profile",
+            "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"
+        ])
+        print("[info] Started new Chrome instance on port 9222")
     global last_alert_unreads
     driver = None
     try:
@@ -234,7 +257,7 @@ def main():
         with SB(uc=True,
                 headless=HEADLESS,  # Respect your env var
                 xvfb=True,  # Run in virtual display
-
+                reuse_session=True,
                 block_images=True,  # Saves network and memory
                 incognito=False,
                 disable_csp=True,  # Prevents CSP issues

@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 # from selenium.common.exceptions import WebDriverException
 from dotenv import load_dotenv
 from seleniumbase import SB, Driver
+from seleniumbase.undetected import Chrome
 
 # ----------------------------------------------------------
 # Load environment
@@ -156,48 +157,48 @@ def load_cookies(driver):
 # ----------------------------------------------------------
 # Browser setup (SeleniumBase UC Mode)
 # ----------------------------------------------------------
-def setup_driver():
-    os.makedirs(PROFILE_DIR, exist_ok=True)
-
-    # driver = Driver(
-    #     uc=True,
-    #     uc_subprocess=True,
-    #     enable_ws=True,
-    #     headless=True,
-    #     headless1=True,
-    #     headless2=True,
-    #     disable_gpu=False,
-    #      agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    #       "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    #      chromium_arg="--disable-background-timer-throttling,"
-    #              "--disable-backgrounding-occluded-windows,"
-    #              "--disable-background-networking,"
-    #              "--no-sandbox"
-    #     # headless=HEADLESS,
-    #     # undetectable=True,
-    #     # user_data_dir=PROFILE_DIR,
-    #     # incognito=False,
-    #     # no_sandbox=True,
-    #     # disable_gpu=True,
-    #     # disable_dev_shm_usage=True,
-    #     # window_size="1600,1000",
-    #     # agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    #     #       "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    # )
-
-    print("[driver] SeleniumBase UC mode started")
-    driver.set_page_load_timeout(60)
-
-    try:
-        driver.execute_script("""
-            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-            Object.defineProperty(navigator, 'languages', {get: () => ['en-US','en']});
-            Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3,4,5]});
-        """)
-    except Exception:
-        pass
-
-    return driver
+# def setup_driver():
+#     os.makedirs(PROFILE_DIR, exist_ok=True)
+#
+#     # driver = Driver(
+#     #     uc=True,
+#     #     uc_subprocess=True,
+#     #     enable_ws=True,
+#     #     headless=True,
+#     #     headless1=True,
+#     #     headless2=True,
+#     #     disable_gpu=False,
+#     #      agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+#     #       "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+#     #      chromium_arg="--disable-background-timer-throttling,"
+#     #              "--disable-backgrounding-occluded-windows,"
+#     #              "--disable-background-networking,"
+#     #              "--no-sandbox"
+#     #     # headless=HEADLESS,
+#     #     # undetectable=True,
+#     #     # user_data_dir=PROFILE_DIR,
+#     #     # incognito=False,
+#     #     # no_sandbox=True,
+#     #     # disable_gpu=True,
+#     #     # disable_dev_shm_usage=True,
+#     #     # window_size="1600,1000",
+#     #     # agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+#     #     #       "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+#     # )
+#
+#     print("[driver] SeleniumBase UC mode started")
+#     driver.set_page_load_timeout(60)
+#
+#     try:
+#         driver.execute_script("""
+#             Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+#             Object.defineProperty(navigator, 'languages', {get: () => ['en-US','en']});
+#             Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3,4,5]});
+#         """)
+#     except Exception:
+#         pass
+#
+#     return driver
 
 
 # ----------------------------------------------------------
@@ -218,21 +219,20 @@ def get_unread_counts(driver):
 
     return n, m
 
- def is_process_running(keyword):
-        for proc in psutil.process_iter(["pid", "cmdline"]):
-            cmd = " ".join(proc.info.get("cmdline", [])).lower()
-            if keyword in cmd and proc.pid != os.getpid():
-                return True
-        return False
+
+def is_process_running(keyword):
+    for proc in psutil.process_iter(["pid", "cmdline"]):
+        cmd = " ".join(proc.info.get("cmdline", [])).lower()
+        if keyword in cmd and proc.pid != os.getpid():
+            return True
+    return False
+
 
 def main():
-
     # for proc in psutil.process_iter(["pid", "name", "cmdline"]):
     #     if "fiverr_keeper_sb.py" in " ".join(proc.info.get("cmdline", [])) and proc.pid != os.getpid():
     #         print("Another Fiverr bot is already running — exiting.")
     #         sys.exit(0)
-
-
 
     # Prevent duplicate bot
     if is_process_running("fiverr_keeper_sb.py"):
@@ -255,9 +255,10 @@ def main():
         os.environ["DISPLAY"] = ":99"
         # driver = setup_driver()
         with SB(uc=True,
-                headless=HEADLESS,  # Respect your env var
+                # headless=HEADLESS,  # Respect your env var
                 xvfb=True,  # Run in virtual display
-                reuse_session=True,
+
+                remote_debug=True,
                 block_images=True,  # Saves network and memory
                 incognito=False,
                 disable_csp=True,  # Prevents CSP issues
@@ -280,6 +281,8 @@ def main():
                 # window_size="1280,800",
                 agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
                       "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36", ) as sb:
+
+
             driver = sb.driver
             # sb.uc_gui_press_key()
             sb.uc_open_with_reconnect("https://www.fiverr.com/", 4)

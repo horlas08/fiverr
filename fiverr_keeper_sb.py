@@ -240,14 +240,14 @@ def main():
         sys.exit(0)
 
     # Start Chrome if not running
-    if not is_process_running("chrome"):
-        subprocess.Popen([
-            "google-chrome",
-            "--remote-debugging-port=9222",
-            "--user-data-dir=/tmp/fiverr_profile",
-            "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"
-        ])
-        print("[info] Started new Chrome instance on port 9222")
+    # if not is_process_running("chrome"):
+    #     subprocess.Popen([
+    #         "google-chrome",
+    #         "--remote-debugging-port=9222",
+    #         "--user-data-dir=/tmp/fiverr_profile",
+    #         "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"
+    #     ])
+    #     print("[info] Started new Chrome instance on port 9222")
     global last_alert_unreads
     driver = None
     try:
@@ -257,8 +257,6 @@ def main():
         with SB(uc=True,
                 headless=HEADLESS,  # Respect your env var
                 xvfb=True,  # Run in virtual display
-
-                remote_debug=True,
                 block_images=True,  # Saves network and memory
                 incognito=False,
                 disable_csp=True,  # Prevents CSP issues
